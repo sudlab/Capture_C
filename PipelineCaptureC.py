@@ -27,7 +27,7 @@ def quantifyAnomolies(bam, probes, outfile):
             c["total"] += 1
     
             if not (read.is_secondary or read.is_supplementary):
-                c["primary"] += 1
+                c["primary_count"] += 1
             else:
                 continue
 
@@ -51,7 +51,7 @@ def quantifyAnomolies(bam, probes, outfile):
         results[probe.name] = c
         total += c["total"]
 
-    headers = ["Probe", "total", "primary", "undigested",
+    headers = ["Probe", "total", "primary_count", "undigested",
                "read1", "paired", "self_lig"]
 
     with IOTools.openFile(outfile, "w") as outf:
