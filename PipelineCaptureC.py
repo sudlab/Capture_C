@@ -282,7 +282,7 @@ def countInteractions(reads, digest, probe_fragments, outfile,
 def interactions2BedGraph(track, probe, db, outfile, chrom=None, start=None, end=None,
                           region_size=1000000, window=2000, step=200):
 
-    import CGATPipelines.PipelineUtilities as PUtils
+    import CGAT.Database as DUtils
     import pandas
     import numpy as np
 
@@ -294,7 +294,7 @@ def interactions2BedGraph(track, probe, db, outfile, chrom=None, start=None, end
                    ON probe_fragments.name = lu.probe
                    WHERE name = '%(probe)s' '''
 
-    probes = PUtils.fetch_DataFrame(statement % locals(), database=db)
+    probes = DUtils.fetch_DataFrame(statement % locals(), dbhandle=db)
     probe_frag = probes.fragment.iloc[0]
 
     if chrom is None:
@@ -318,11 +318,11 @@ def interactions2BedGraph(track, probe, db, outfile, chrom=None, start=None, end
                     AND Frag1 = '%(probe_frag)s' AND track = '%(track)s'
                     AND chr='%(probe_chr)s'
                     AND centre > %(start)s AND centre <= %(end)s
-                    AND NOT ABS(centre - %(probe_start)) < 2000
+                    AND NOT ABS(centre - %(start)s) < 2000
                    ORDER BY centre '''
-
+    
     E.debug(statement % locals())
-    interactions = PUtils.fetch_DataFrame(statement % locals(), db)
+    interactions = DUtils.fetch_DataFrame(statement % locals(), db)
     E.debug("Got %i interacting fragments" % interactions.shape[0])
 
     interactions["centre"] = interactions["centre"].astype("float64")
@@ -345,7 +345,7 @@ def interactions2BedGraph(track, probe, db, outfile, chrom=None, start=None, end
 
     E.debug("format output")
     windowed = windowed.reset_index()
-
+    windowed["start"] = windowed["start"].astype("int32")
     windowed["end"] = windowed["start"] + step
     windowed["chr"] = probe_chr
     windowed = windowed[["chr", "start", "end", 0]]

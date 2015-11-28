@@ -358,7 +358,7 @@ def reorderBAM(infile, outfile):
     P.run()
 
 
-@follows(mkdir("quantitation.dir"))
+@follows(mkdir("quantitation.dir"), Prepare_fragments)
 @transform(reorderBAM,
            regex(".+/(.+).by_name.bam"),
            add_inputs(digest2fragments, getProbeFragments),
@@ -372,7 +372,7 @@ def countInteractions(infiles, outfile):
     PipelineCaptureC.countInteractions(reads, digest, probes,
                                        outfile, metrics,
                                        submit=True,
-                                       job_memory="4G")
+                                       job_memory="10G")
 
 
 @merge(countInteractions, "interaction_counts.load")
@@ -393,7 +393,7 @@ def loadInteractionCountMetrics(infiles, outfile):
 
 
 
-@follows(mkdir("bedGraphs.dir"))
+@follows(mkdir("bedGraphs.dir"), loadInteractionCounts)
 @product(countInteractions,
          formatter("(.tsv.gz)$"),
          generateProbeSentries,
@@ -416,7 +416,7 @@ def Quant():
                       
 # ---------------------------------------------------
 # Generic pipeline tasks
-@follows(loadAnomolies)
+@follows(loadAnomolies, Quant)
 def full():
     pass
 

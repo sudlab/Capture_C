@@ -9,10 +9,10 @@ class CaptureCTracker(TrackerSQL):
     
     def __init__(self, *args, **kwags):
 
-        if PIPELINE_DB is not None:
-            self.backend = PIPELINE_DB
-
-        TrackerSQL.__init__(self, *args,
+   	print "new"
+	print PIPELINE_DB
+        TrackerSQL.__init__(self, backend=PIPELINE_DB,
+                            *args,
                             **kwargs)
 
     
