@@ -118,7 +118,7 @@ def sites2fragments(infile, genomefile, outfile):
                 name += 1
                 new_bed.start = last_end
                 new_bed.contig = last_contig
-                new_bed.end = contig_lengths[bed.contig]
+                new_bed.end = contig_lengths[last_contig]
                 new_bed["name"] = str(name)
 
                 outf.write(str(new_bed) + "\n")
